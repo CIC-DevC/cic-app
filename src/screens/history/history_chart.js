@@ -35,8 +35,6 @@ function HistoryChart() {
 
   const chartRef = useRef();
 
-  const [visibleRange, setVisibleRange] = useState();
-
   useEffect(() => {
     const clone = cloneDeep(data);
     clone.dataSets[0].values = getData();
@@ -44,12 +42,12 @@ function HistoryChart() {
     chartRef.current.setDataAndLockIndex({
       dataSets: clone.dataSets,
     });
-    setVisibleRange({
-      x: {
-        min: 2,
-        max: 2,
-      },
-    });
+    // setVisibleRange({
+    //   x: {
+    //     min: 2,
+    //     max: 2,
+    //   },
+    // });
     // setTimeout(() => {
     //   if (clone.dataSets[0].values.length > 0) {
     //     chartRef.current.visibleRange = {
@@ -73,10 +71,9 @@ function HistoryChart() {
 
   function getData() {
     const data = [];
-    const now = dayjs();
     for (let i = 100; i >= 0; i--) {
       data.push({
-        x: now.subtract(i, 'day').toDate().getTime(),
+        x: dayjs().subtract(i, 'day').toDate().getTime(),
         y: Math.random() * 10 + 500,
       });
     }
@@ -85,30 +82,45 @@ function HistoryChart() {
 
   return (
     <View style={[styles.container, commonStyles.containerRadius]}>
-      <MemoziedLineChart
-        chartRef={chartRef}
-        visibleRange={visibleRange}
-        handleSelect={handleSelect}
-      />
+      <MemoziedLineChart chartRef={chartRef} handleSelect={handleSelect} />
     </View>
   );
 }
 
-const MemoziedLineChart = React.memo(
-  ({chartRef, visibleRange, handleSelect}) => {
-    console.log('build');
-    const chartConfig = {
-      marker: {
-        enabled: true,
-        digits: 2,
-        backgroundTint: processColor('teal'),
-        markerColor: processColor('#F0C0FF8C'),
-        textColor: processColor('white'),
+const MemoziedLineChart = React.memo(({chartRef, handleSelect}) => {
+  const chartConfig = {
+    marker: {
+      enabled: true,
+      digits: 2,
+      backgroundTint: processColor('teal'),
+      markerColor: processColor('#F0C0FF8C'),
+      textColor: processColor('white'),
+    },
+    xAxis: {
+      granularityEnabled: true,
+      granularity: 1,
+      position: 'BOTTOM',
+      axisLineColor: processColor('#000'),
+      axisLineWidth: 2,
+      gridLineWidth: 1,
+      gridDashedLine: {
+        lineLength: 10,
+        spaceLength: 10,
+        phase: 0,
       },
-      xAxis: {
-        granularityEnabled: true,
-        granularity: 1,
-        position: 'BOTTOM',
+      textSize: 12,
+      labelCount: 5,
+      valueFormatter: 'date',
+      valueFormatterPattern: 'dd/MM',
+    },
+    legend: {
+      enabled: false,
+    },
+    yAxis: {
+      right: {
+        enabled: false,
+      },
+      left: {
         axisLineColor: processColor('#000'),
         axisLineWidth: 2,
         gridLineWidth: 1,
@@ -118,61 +130,38 @@ const MemoziedLineChart = React.memo(
           phase: 0,
         },
         textSize: 12,
-        labelCount: 5,
-        valueFormatter: 'date',
-        valueFormatterPattern: 'dd/MM',
       },
-      legend: {
-        enabled: false,
-      },
-      yAxis: {
-        right: {
-          enabled: false,
-        },
-        left: {
-          axisLineColor: processColor('#000'),
-          axisLineWidth: 2,
-          gridLineWidth: 1,
-          gridDashedLine: {
-            lineLength: 10,
-            spaceLength: 10,
-            phase: 0,
-          },
-          textSize: 12,
-        },
-      },
-      visibleRange: {visibleRange},
-    };
-    return (
-      <LineChart
-        data={{
-          dataSets: [],
-        }}
-        ref={chartRef}
-        style={styles.chart}
-        chartDescription={{text: ''}}
-        marker={chartConfig.marker}
-        xAxis={chartConfig.xAxis}
-        yAxis={chartConfig.yAxis}
-        drawGridBackground={false}
-        legend={chartConfig.legend}
-        autoScaleMinMaxEnabled={false}
-        touchEnabled={true}
-        dragEnabled={true}
-        scaleXEnabled={true}
-        scaleYEnabled={false}
-        pinchZoom={true}
-        doubleTapToZoomEnabled={true}
-        highlightPerTapEnabled={true}
-        highlightPerDragEnabled={false}
-        dragDecelerationEnabled={false}
-        keepPositionOnRotation={false}
-        onSelect={handleSelect.bind(this)}
-        // onChange={(event) => console.log(event.nativeEvent)}
-      />
-    );
-  },
-);
+    },
+  };
+  return (
+    <LineChart
+      data={{
+        dataSets: [],
+      }}
+      ref={chartRef}
+      style={styles.chart}
+      chartDescription={{text: ''}}
+      marker={chartConfig.marker}
+      xAxis={chartConfig.xAxis}
+      yAxis={chartConfig.yAxis}
+      drawGridBackground={false}
+      legend={chartConfig.legend}
+      autoScaleMinMaxEnabled={false}
+      touchEnabled={true}
+      dragEnabled={true}
+      scaleXEnabled={true}
+      scaleYEnabled={false}
+      pinchZoom={true}
+      doubleTapToZoomEnabled={true}
+      highlightPerTapEnabled={true}
+      highlightPerDragEnabled={false}
+      dragDecelerationEnabled={false}
+      keepPositionOnRotation={false}
+      onSelect={handleSelect.bind(this)}
+      // onChange={(event) => console.log(event.nativeEvent)}
+    />
+  );
+});
 
 const styles = StyleSheet.create({
   container: {

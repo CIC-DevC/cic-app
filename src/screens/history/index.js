@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,16 +11,16 @@ import {images} from '~/assets';
 import colors from '~/styles/colors';
 import commonStyles from '~/styles';
 import {Button} from 'react-native-elements';
-import HistoryChart from './test';
-import StockChartScreen from './demo_chart';
-import InfiniteScrollLineChartScreen from './line_chart';
+import HistoryChart from './history_chart';
+import {LocalizationContext} from '~/translations';
 
 export default function HistoryScreen() {
+  const {t} = useContext(LocalizationContext);
   return (
     <ScrollView style={styles.container} alwaysBounceVertical={false}>
       <ImageBackground style={styles.headerImg} source={images.homeHeader} />
       <View style={styles.body}>
-        <Text style={styles.helloText}>Xin chào!</Text>
+        <Text style={styles.helloText}>{t('common.hello')}</Text>
         <View style={[commonStyles.containerRadius, styles.messageWrapper]}>
           <Text
             style={[
@@ -31,12 +31,12 @@ export default function HistoryScreen() {
             TRƯỚC
           </Text>
         </View>
-        <Text style={styles.titleLabel}>Your Score History</Text>
+        <Text style={styles.titleLabel}>
+          {t('history.label.yourScoreHistory')}
+        </Text>
         <HistoryChart />
-        <InfiniteScrollLineChartScreen />
-        <StockChartScreen />
         <Button
-          title="Improve Score"
+          title={t('history.improveScore')}
           buttonStyle={[commonStyles.primaryButton, {marginTop: 25}]}
         />
       </View>

@@ -3,12 +3,11 @@ export default {
     home: 'Trang chủ',
     history: 'Lịch sử',
     scoreIncrement: 'Tăng điểm',
-    borrowMoney: 'Vay tiền',
+    account: 'Tài khoản',
   },
   error: {
     title: 'Thông báo',
     connectionlost: 'Lỗi kết nối',
-    unauthorized: 'Bạn không có quyền truy cập',
     noMessage: 'Có lỗi xảy ra',
   },
   button: {
@@ -53,5 +52,19 @@ export default {
       yourScore: 'Điểm CIC của bạn',
       summaryReport: 'Tổng kết báo cáo tín dụng của bạn',
     },
+  },
+  account: {
+    label: {
+      contact: 'Liên hệ',
+      term: 'Điều khoản sử dụng',
+      feedback: 'Phản hồi',
+      logout: 'Đăng xuất',
+    },
+  },
+  history: {
+    label: {
+      yourScoreHistory: 'Lịch sử điểm của bạn',
+    },
+    improveScore: 'Cải thiện điểm',
   },
 };

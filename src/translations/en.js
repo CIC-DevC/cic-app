@@ -3,13 +3,12 @@ export default {
     home: 'Home',
     history: 'History',
     scoreIncrement: 'Increase Score',
-    borrowMoney: 'Borrow Money',
+    account: 'Account',
   },
   error: {
-    title: 'Thông báo',
-    connectionlost: 'Lỗi kết nối',
-    unauthorized: 'Bạn không có quyền truy cập',
-    noMessage: 'Có lỗi xảy ra',
+    title: 'Notification',
+    connectionlost: 'Connection errors',
+    noMessage: 'An error occurred',
   },
   button: {
     OK: 'OK',
@@ -53,5 +52,19 @@ export default {
       yourScore: 'Your CIC Score',
       summaryReport: 'Summary of your credit report',
     },
+  },
+  account: {
+    label: {
+      contact: 'Contact',
+      term: 'Terms of use',
+      feedback: 'Feedback',
+      logout: 'Logout',
+    },
+  },
+  history: {
+    label: {
+      yourScoreHistory: 'Your Score History',
+    },
+    improveScore: 'Improve Score',
   },
 };
