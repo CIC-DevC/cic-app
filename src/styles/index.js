@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: colors.primary,
     height: 37,
+    paddingVertical: 0,
   },
 });
 export default styles;

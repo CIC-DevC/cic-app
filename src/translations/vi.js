@@ -63,8 +63,16 @@ export default {
   },
   history: {
     label: {
+      notify: 'TUYỆT VỜI! ĐIỂM CỦA BẠN ĐÃ ĐƯỢC CẢI THIỆN 20% SO VỚI TUẦN TRƯỚC',
       yourScoreHistory: 'Lịch sử điểm của bạn',
     },
     improveScore: 'Cải thiện điểm',
+  },
+  increaseScore: {
+    label: {
+      improveScore: 'Cải thiện điểm của bạn',
+      yourCurrentScore: 'Điểm của bạn là',
+      tips: 'Đây là những lời khuyên cho bạn',
+    },
   },
 };

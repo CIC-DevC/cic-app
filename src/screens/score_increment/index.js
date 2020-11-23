@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,31 +6,31 @@ import {
   ImageBackground,
   ScrollView,
 } from 'react-native';
-import { images } from '~/assets';
+import {images} from '~/assets';
 import colors from '~/styles/colors';
 import commonStyles from '~/styles';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
+import {LocalizationContext} from '~/translations';
 
 export default function ScoreIncrementScreen() {
   const user = useSelector((state) => state.auth.user);
   const score = user.score ? Math.round((1 - user.score) * 1000) : 0;
-
+  const {t} = useContext(LocalizationContext);
   return (
     <ScrollView style={styles.container} alwaysBounceVertical={false}>
       <ImageBackground style={styles.headerImg} source={images.homeHeader} />
       <View style={styles.body}>
-        <Text style={styles.helloText}>Xin chào!</Text>
+        <Text style={styles.helloText}>{t('common.hello')}</Text>
         <View style={[commonStyles.containerRadius, styles.messageWrapper]}>
           <Text
             style={[
               commonStyles.largeText,
-              { color: colors.white, marginBottom: 7 },
-            ]}
-          >
-            Improve your score
+              {color: colors.white, marginBottom: 7},
+            ]}>
+            {t('increaseScore.label.improveScore')}
           </Text>
-          <Text style={[commonStyles.mediumText, { color: colors.white }]}>
-            Improve your score
+          <Text style={[commonStyles.mediumText, {color: colors.white}]}>
+            {t('increaseScore.label.improveScore')}
           </Text>
           <View style={[commonStyles.containerRadius, styles.scoreWrapper]}>
             <Text
@@ -44,23 +44,21 @@ export default function ScoreIncrementScreen() {
                 },
               ]}
               numberOfLines={2}
-              ellipsizeMode='tail'
-              allowFontScaling={true}
-            >
-              {'Your Current Score is  '}
+              ellipsizeMode="tail"
+              allowFontScaling={true}>
+              {t('increaseScore.label.yourCurrentScore') + '   '}
               <Text
                 style={{
                   color: colors.green,
                   fontSize: 25,
-                }}
-              >
+                }}>
                 {score}
               </Text>
               {' /1000'}
             </Text>
           </View>
         </View>
-        <Text style={styles.titleLabel}>Here is some tips for you</Text>
+        <Text style={styles.titleLabel}>{t('increaseScore.label.tips')}</Text>
         <View style={[commonStyles.containerRadius, styles.tipWrapper]}></View>
       </View>
     </ScrollView>

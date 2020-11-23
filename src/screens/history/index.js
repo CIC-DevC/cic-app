@@ -27,8 +27,7 @@ export default function HistoryScreen() {
               commonStyles.largeText,
               {color: colors.white, textAlign: 'center'},
             ]}>
-            GOOD JOB ! ĐIỂM SCORE CỦA BẠN ĐÃ ĐƯỢC CẢI THIỆN 20% SO VỚI TUẦN
-            TRƯỚC
+            {t('history.label.notify')}
           </Text>
         </View>
         <Text style={styles.titleLabel}>

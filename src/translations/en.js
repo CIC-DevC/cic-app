@@ -63,8 +63,16 @@ export default {
   },
   history: {
     label: {
+      notify: 'GOOD JOB! YOUR SCORE HAVE BEEN IMPROVED 20% FROM THE LAST WEEK',
       yourScoreHistory: 'Your Score History',
     },
     improveScore: 'Improve Score',
+  },
+  increaseScore: {
+    label: {
+      improveScore: 'Improve your score',
+      yourCurrentScore: 'Your current score is',
+      tips: 'Here is some tips for you',
+    },
   },
 };

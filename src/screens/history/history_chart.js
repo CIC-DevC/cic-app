@@ -1,102 +1,27 @@
-import React, {useMemo, useEffect, useState, useRef} from 'react';
-import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  Button,
-  View,
-  processColor,
-} from 'react-native';
-import commonStyles from '~/styles';
+import React, {useState, useEffect, useRef} from 'react';
+import {StyleSheet, View, processColor} from 'react-native';
 
 import {LineChart} from 'react-native-charts-wrapper';
-import cloneDeep from 'lodash/cloneDeep';
 import colors from '~/styles/colors';
 import dayjs from 'dayjs';
+import commonStyles from '~/styles';
+
+const pageSize = 100;
 
 function HistoryChart() {
-  const [data, setData] = useState({
-    dataSets: [
-      {
-        values: [],
-        label: 'Score',
-        config: {
-          color: processColor(colors.green),
-          drawValues: false,
-          axisDependency: 'LEFT',
-          circleColor: processColor(colors.green),
-          circleHoleColor: processColor(colors.green),
-          circleRadius: 3,
-          lineWidth: 2,
-        },
-      },
-    ],
-  });
-
-  const chartRef = useRef();
-
-  useEffect(() => {
-    const clone = cloneDeep(data);
-    clone.dataSets[0].values = getData();
-    setData(clone);
-    chartRef.current.setDataAndLockIndex({
-      dataSets: clone.dataSets,
-    });
-    // setVisibleRange({
-    //   x: {
-    //     min: 2,
-    //     max: 2,
-    //   },
-    // });
-    // setTimeout(() => {
-    //   if (clone.dataSets[0].values.length > 0) {
-    //     chartRef.current.visibleRange = {
-    //       x: {
-    //         min: 10,
-    //         max: 10,
-    //       },
-    //     };
-    //   }
-    // }, 100);
-  }, []);
-
-  function handleSelect(event) {
-    let entry = event.nativeEvent;
-    // if (entry == null) {
-    //   this.setState({...this.state, selectedEntry: null});
-    // } else {
-    //   this.setState({...this.state, selectedEntry: JSON.stringify(entry)});
-    // }
-  }
-
-  function getData() {
-    const data = [];
-    for (let i = 100; i >= 0; i--) {
-      data.push({
-        x: dayjs().subtract(i, 'day').toDate().getTime(),
-        y: Math.random() * 10 + 500,
-      });
-    }
-    return data;
-  }
-
-  return (
-    <View style={[styles.container, commonStyles.containerRadius]}>
-      <MemoziedLineChart chartRef={chartRef} handleSelect={handleSelect} />
-    </View>
-  );
-}
-
-const MemoziedLineChart = React.memo(({chartRef, handleSelect}) => {
-  const chartConfig = {
+  const [xMin, setXMin] = useState(0);
+  const [xMax, setXMax] = useState(0);
+  const [chartState, setChartState] = useState({
+    data: {},
     marker: {
       enabled: true,
       digits: 2,
       backgroundTint: processColor('teal'),
-      markerColor: processColor('#F0C0FF8C'),
+      markerColor: processColor('#000'),
       textColor: processColor('white'),
     },
     xAxis: {
+      avoidFirstLastClipping: true,
       granularityEnabled: true,
       granularity: 1,
       position: 'BOTTOM',
@@ -112,6 +37,7 @@ const MemoziedLineChart = React.memo(({chartRef, handleSelect}) => {
       labelCount: 5,
       valueFormatter: 'date',
       valueFormatterPattern: 'dd/MM',
+      timeUnit: 'DAYS',
     },
     legend: {
       enabled: false,
@@ -132,36 +58,95 @@ const MemoziedLineChart = React.memo(({chartRef, handleSelect}) => {
         textSize: 12,
       },
     },
-  };
+  });
+
+  const chartRef = useRef();
+
+  useEffect(() => {
+    mockLoadDataFromServer(-pageSize, pageSize).then(function (data) {
+      setChartState({
+        ...chartState,
+        data: data,
+        visibleRange: {x: {min: 5, max: 30}},
+      });
+      if (data.dataSets[0].values && data.dataSets[0].values.length > 0) {
+        setTimeout(() => {
+          chartRef.current.moveViewToX(
+            data.dataSets[0].values[data.dataSets[0].values.length - 1].x,
+          );
+        }, 50);
+      }
+    });
+  }, []);
+
+  function getData() {
+    const data = [];
+    for (let i = 100; i >= 0; i--) {
+      data.push({
+        x: Math.floor(dayjs().subtract(i, 'day').toDate().getTime() / 8.64e7),
+        y: Math.random() * 10 + 500,
+      });
+    }
+    return data;
+  }
+
+  function mockLoadDataFromServer(from, to) {
+    return new Promise(function (resolve) {
+      setTimeout(function () {
+        setXMin(from);
+        setXMax(to);
+
+        console.log('load data from ' + from + ' to ' + to);
+        resolve({
+          dataSets: [
+            {
+              values: getData(),
+              label: 'Score',
+              config: {
+                color: processColor(colors.green),
+                drawValues: false,
+                axisDependency: 'LEFT',
+                circleColor: processColor(colors.green),
+                circleHoleColor: processColor(colors.green),
+                circleRadius: 3,
+                lineWidth: 2,
+              },
+            },
+          ],
+        });
+      }, 50);
+    });
+  }
+
   return (
-    <LineChart
-      data={{
-        dataSets: [],
-      }}
-      ref={chartRef}
-      style={styles.chart}
-      chartDescription={{text: ''}}
-      marker={chartConfig.marker}
-      xAxis={chartConfig.xAxis}
-      yAxis={chartConfig.yAxis}
-      drawGridBackground={false}
-      legend={chartConfig.legend}
-      autoScaleMinMaxEnabled={false}
-      touchEnabled={true}
-      dragEnabled={true}
-      scaleXEnabled={true}
-      scaleYEnabled={false}
-      pinchZoom={true}
-      doubleTapToZoomEnabled={true}
-      highlightPerTapEnabled={true}
-      highlightPerDragEnabled={false}
-      dragDecelerationEnabled={false}
-      keepPositionOnRotation={false}
-      onSelect={handleSelect.bind(this)}
-      // onChange={(event) => console.log(event.nativeEvent)}
-    />
+    <View style={[styles.container, commonStyles.containerRadius]}>
+      <LineChart
+        style={styles.chart}
+        data={chartState.data}
+        chartDescription={{text: ''}}
+        xAxis={chartState.xAxis}
+        yAxis={chartState.yAxis}
+        touchEnabled={true}
+        dragEnabled={true}
+        scaleEnabled={true}
+        scaleXEnabled={true}
+        scaleYEnabled={false}
+        doubleTapToZoomEnabled={false}
+        pinchZoom={false}
+        visibleRange={chartState.visibleRange}
+        dragDecelerationEnabled={false}
+        marker={chartState.marker}
+        drawGridBackground={false}
+        legend={chartState.legend}
+        highlightPerTapEnabled={true}
+        highlightPerDragEnabled={false}
+        keepPositionOnRotation={false}
+        ref={chartRef}
+        // onChange={this.handleChange.bind(this)}
+      />
+    </View>
   );
-});
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -172,7 +157,7 @@ const styles = StyleSheet.create({
   },
   chart: {
     flex: 1,
-    height: 220,
+    height: 300,
   },
 });
 

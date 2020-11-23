@@ -91,26 +91,33 @@ export default function ConfirmOtpScreen({navigation, route}) {
   function onConfirm() {
     setLoading(true);
     const phone = phoneInput.prefix.replace('+', '') + phoneInput.number;
-    dispatch(
-      login('tokenFake', {
-        phoneNum: '84971008256',
-        score: 0.5249708073,
-        name: 'Nguyễn An Vy',
-        avatar:
-          'https://znews-photo.zadn.vn/w660/Uploaded/ofh_fdmzsofw/2018_06_18/20664619_922736004599124_4484661755892955355_n.jpg',
-      }),
-    );
-    setLoading(false);
-    // requestLogin(phone, codeOtp)
-    //   .then((response) => {
-    //     if (response.data) {
-    //       dispatch(login('tokenFake', response.data));
-    //     }
-    //     setLoading(false);
-    //   })
-    //   .catch((err) => {
-    //     setLoading(false);
-    //   });
+    // dispatch(
+    //   login('tokenFake', {
+    //     phoneNum: '84971008256',
+    //     score: 0.5249708073,
+    //     name: 'Nguyễn An Vy',
+    //     avatar:
+    //       'https://znews-photo.zadn.vn/w660/Uploaded/ofh_fdmzsofw/2018_06_18/20664619_922736004599124_4484661755892955355_n.jpg',
+    //   }),
+    // );
+    setLoading(true);
+    requestLogin(phone, codeOtp)
+      .then((response) => {
+        if (response.data) {
+          dispatch(
+            login('tokenFake', {
+              ...response.data,
+              name: 'Nguyễn An Vy',
+              avatar:
+                'https://znews-photo.zadn.vn/w660/Uploaded/ofh_fdmzsofw/2018_06_18/20664619_922736004599124_4484661755892955355_n.jpg',
+            }),
+          );
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+      });
   }
 
   function onResend() {
