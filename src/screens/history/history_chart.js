@@ -5,10 +5,13 @@ import {LineChart} from 'react-native-charts-wrapper';
 import colors from '~/styles/colors';
 import dayjs from 'dayjs';
 import commonStyles from '~/styles';
+import {getHistoryScore} from '~/api/history';
+import {useSelector} from 'react-redux';
 
 const pageSize = 100;
 
 function HistoryChart() {
+  const user = useSelector((state) => state.auth.user);
   const [xMin, setXMin] = useState(0);
   const [xMax, setXMax] = useState(0);
   const [chartState, setChartState] = useState({
@@ -63,21 +66,82 @@ function HistoryChart() {
   const chartRef = useRef();
 
   useEffect(() => {
-    mockLoadDataFromServer(-pageSize, pageSize).then(function (data) {
-      setChartState({
-        ...chartState,
-        data: data,
-        visibleRange: {x: {min: 5, max: 30}},
-      });
-      if (data.dataSets[0].values && data.dataSets[0].values.length > 0) {
-        setTimeout(() => {
-          chartRef.current.moveViewToX(
-            data.dataSets[0].values[data.dataSets[0].values.length - 1].x,
-          );
-        }, 50);
-      }
-    });
+    // mockLoadDataFromServer(-pageSize, pageSize).then(function (data) {
+    //   setChartState({
+    //     ...chartState,
+    //     data: data,
+    //     visibleRange: {x: {min: 5, max: 30}},
+    //   });
+    //   if (data.dataSets[0].values && data.dataSets[0].values.length > 0) {
+    //     setTimeout(() => {
+    //       chartRef.current.moveViewToX(
+    //         data.dataSets[0].values[data.dataSets[0].values.length - 1].x,
+    //       );
+    //     }, 50);
+    //   }
+    // });
+    getDataHistoryScore();
   }, []);
+
+  function getDataHistoryScore() {
+    getHistoryScore(user.phoneNum)
+      .then((response) => {
+        let data = [];
+        if (
+          response.data &&
+          response.data.score &&
+          response.data.score.length > 0
+        ) {
+          console.log(response.data);
+          data = response.data.score.map((item) => {
+            // console.log(item.createdDate instanceof Date);
+            // console.log(item.createdDate.getTime());
+
+            console.log(dayjs(item.createdDate).toDate());
+            return {
+              x: Math.floor(
+                dayjs(item.createdDate).toDate().getTime() / 8.64e7,
+              ),
+              y: item.score ? Math.round((1 - item.score) * 1000) : 0,
+            };
+          });
+          console.log(data);
+        }
+        updateChart(data);
+      })
+      .catch(() => {
+        updateChart([]);
+      });
+  }
+
+  function updateChart(data) {
+    setChartState({
+      ...chartState,
+      data: {
+        dataSets: [
+          {
+            values: data,
+            label: 'Score',
+            config: {
+              color: processColor(colors.green),
+              drawValues: false,
+              axisDependency: 'LEFT',
+              circleColor: processColor(colors.green),
+              circleHoleColor: processColor(colors.green),
+              circleRadius: 3,
+              lineWidth: 2,
+            },
+          },
+        ],
+      },
+      visibleRange: {x: {min: 5, max: 30}},
+    });
+    if (data.length > 0) {
+      setTimeout(() => {
+        chartRef.current.moveViewToX(data[data.length - 1].x);
+      }, 50);
+    }
+  }
 
   function getData() {
     const data = [];
