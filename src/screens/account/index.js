@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
     borderWidth: 5,
     alignSelf: 'center',
-    marginTop: 30,
+    marginTop: 60,
   },
   usernameLabel: {
     textAlign: 'center',
